@@ -12,6 +12,7 @@ function LocalStash(resolution, options) {
 	// options:
 	//   maxKeys: int (null)                 (if there are more keys stored than allowed, GC cycles will be triggered early).
 	//   aggressiveExpiration: bool (false)  (when true, a get() will not return an expired value, even if it still hasn't been garbage collected).
+	//   unrefTimer: bool (false)            (when true, the timer will be "unref'ed" allowing the program to terminate without executing the timer.
 
 	this.resolution = resolution || 60;		// in seconds, eg: 60
 	this.options = options || {};
@@ -75,6 +76,10 @@ LocalStash.prototype.scheduleGcCycle = function (interval) {
 	this.timer = setTimeout(function () {
 		that.gcScheduled();
 	}, interval * 1000);
+
+	if (this.options.unrefTimer) {
+		this.timer.unref();
+	}
 };
 
 
